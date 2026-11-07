@@ -1,0 +1,12 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Demo Admin Dashboard</title><style>
+body{font-family:Arial,sans-serif;background:#f1f5f9;margin:0;padding:24px;color:#172033}.wrap{max-width:900px;margin:auto;background:white;padding:24px;border-radius:14px;box-shadow:0 8px 30px #0f172a12}h1{margin-top:0}input{padding:12px;border:1px solid #cbd5e1;border-radius:8px;width:min(360px,90%)}button{padding:12px 16px;background:#2457d6;color:white;border:0;border-radius:8px;font-weight:bold;margin-left:8px}p{color:#64748b}table{border-collapse:collapse;width:100%;margin-top:20px}th,td{text-align:left;padding:12px;border-bottom:1px solid #e2e8f0;font-size:14px}th{background:#f8fafc}.small{font-size:12px;color:#64748b}
+</style></head><body><main class="wrap"><h1>Demo Admin Dashboard</h1><p>Enter the ADMIN_KEY configured by the project owner. This dashboard displays consented demo IDs only.</p>
+<input id="key" type="password" placeholder="Admin key" autocomplete="off"><button id="load">Load submissions</button><div id="msg" role="status"></div>
+<table><thead><tr><th>Demo User ID</th><th>Submission</th><th>Time (UTC)</th></tr></thead><tbody id="rows"></tbody></table><p class="small">No passwords or authentication secrets are collected or displayed.</p></main>
+<script>
+document.getElementById('load').onclick=async()=>{const msg=document.getElementById('msg'),rows=document.getElementById('rows');msg.textContent='Loading…';rows.replaceChildren();
+try{const r=await fetch('/api/admin/submissions',{headers:{'x-admin-key':document.getElementById('key').value}});const d=await r.json();if(!r.ok)throw new Error(d.error||'Could not load');
+for(const item of d.submissions){const tr=document.createElement('tr');[item.userId,item.demoResult,item.submittedAt].forEach(v=>{const td=document.createElement('td');td.textContent=v;tr.appendChild(td)});rows.appendChild(tr)}
+msg.textContent=d.submissions.length+' submission(s).';
+}catch(e){msg.textContent=e.message;}}
+</script></body></html>
